@@ -442,26 +442,23 @@ def bci_get_block_header_data(inp):
     }
 
 def blockr_get_block_header_data(height, network='btc'):
-    if network == 'testnet':
-        blockr_url = "http://tbtc.blockr.io/api/v1/block/raw/"
-    elif network == 'btc':
-        blockr_url = "http://btc.blockr.io/api/v1/block/raw/"
+    if network == 'btc':
+        blockr_url = "https://blockchain.info/block-height/"
     else:
         raise Exception(
             'Unsupported network {0} for blockr_get_block_header_data'.format(network))
 
-    k = json.loads(make_request(blockr_url + str(height)).decode("utf-8"))
-    j = k['data']
+    k = json.loads(make_request(blockr_url + str(height) + '?format=json').decode("utf-8"))
+    j = k['blocks'][0]
     return {
-        'version': j['version'],
+        'version': j['ver'],
         'hash': j['hash'],
-        'prevhash': j['previousblockhash'],
+        'prevhash': j['prev_block'],
         'timestamp': j['time'],
-        'merkle_root': j['merkleroot'],
-        'bits': int(j['bits'], 16),
+        'merkle_root': j['mrkl_root'],
+        'bits': j['bits'],
         'nonce': j['nonce'],
     }
-
 
 def get_block_timestamp(height, network='btc'):
     if network == 'testnet':
